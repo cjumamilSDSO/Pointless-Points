@@ -8,6 +8,8 @@ const role = ref('');
 const birthdate = ref('');
 const error = ref('');
 const form = ref(null);
+// test commit
+
 
 const rules = {
   required: value => !!value || 'Required field'
