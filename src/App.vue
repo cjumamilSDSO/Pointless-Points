@@ -47,6 +47,13 @@
 						</v-card>
 
 						<v-card class="mb-4">
+							<v-card-title>Points Distribution</v-card-title>
+							<v-card-text>
+								<BarGraph :users="users" />
+							</v-card-text>
+						</v-card>
+
+						<v-card class="mb-4">
 							<v-card-title>Team Members</v-card-title>
 							<v-card-text>
 								<UserList :users="users" />
@@ -65,14 +72,20 @@
 						cols="12"
 						md="4"
 					>
-						<v-card class="mb-4">
+						<v-card
+							v-if="isSupervisor"
+							class="mb-4"
+						>
 							<v-card-title>Add New Member</v-card-title>
 							<v-card-text>
 								<AddUser @add-user="addUser" />
 							</v-card-text>
 						</v-card>
 
-						<v-card class="mb-4">
+						<v-card
+							v-if="isSupervisor"
+							class="mb-4"
+						>
 							<v-card-title>Add Important Date</v-card-title>
 							<v-card-text>
 								<ImportantDates @add-date="addImportantDate" />
@@ -114,6 +127,7 @@ import AuditLog from './components/AuditLog.vue'
 import Podium from './components/Podium.vue'
 import Calendar from './components/Calendar.vue'
 import ImportantDates from './components/ImportantDates.vue'
+import BarGraph from './components/BarGraph.vue'
 
 // Store users in localStorage to persist data
 const users = ref([])
@@ -145,6 +159,7 @@ const addUser = (user) => {
 		name: user.name,
 		role: user.role,
 		birthdate: user.birthdate,
+		color: user.color,
 		points: 0,
 	})
 	saveUsers()
