@@ -1,14 +1,14 @@
 <script setup>
-defineProps({
-	users: {
-		type: Array,
-		required: true,
-	},
-})
+	defineProps({
+		users: {
+			type: Array,
+			required: true,
+		},
+	})
 
-const getTopThree = (users) => {
-	return [...users].sort((a, b) => b.points - a.points).slice(0, 3)
-}
+	const getTopThree = (users) => {
+		return [...users].sort((a, b) => b.points - a.points).slice(0, 3)
+	}
 </script>
 
 <template>
@@ -20,7 +20,7 @@ const getTopThree = (users) => {
 			<!-- Second Place -->
 			<div class="podium-item">
 				<v-avatar
-					size="56"
+					size="35"
 					:color="getTopThree(users)[1].color || 'grey-lighten-1'"
 				>
 					<v-icon size="32">mdi-numeric-2</v-icon>
@@ -76,7 +76,7 @@ const getTopThree = (users) => {
 			<!-- Third Place -->
 			<div class="podium-item">
 				<v-avatar
-					size="48"
+					size="30"
 					:color="getTopThree(users)[2].color || 'brown-lighten-1'"
 				>
 					<v-icon size="28">mdi-numeric-3</v-icon>
@@ -111,43 +111,43 @@ const getTopThree = (users) => {
 </template>
 
 <style scoped>
-.podium-container {
-	display: flex;
-	justify-content: center;
-	align-items: flex-end;
-	min-height: 200px;
-	padding: 20px;
-}
+	.podium-container {
+		display: flex;
+		justify-content: center;
+		align-items: flex-end;
+		min-height: 200px;
+		padding: 20px;
+	}
 
-.podium {
-	display: flex;
-	align-items: flex-end;
-	gap: 10px;
-}
+	.podium {
+		display: flex;
+		align-items: flex-end;
+		gap: 10px;
+	}
 
-.podium-item {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 8px;
-}
+	.podium-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+	}
 
-.platform {
-	width: 100px;
-	border-radius: 8px 8px 0 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
+	.platform {
+		width: 100px;
+		border-radius: 8px 8px 0 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
 
-.user-info {
-	text-align: center;
-	padding: 8px;
-}
+	.user-info {
+		text-align: center;
+		padding: 8px;
+	}
 
-.user-name {
-	font-weight: bold;
-	margin-bottom: 4px;
-	word-break: break-word;
-}
+	.user-name {
+		font-weight: bold;
+		margin-bottom: 4px;
+		word-break: break-word;
+	}
 </style>

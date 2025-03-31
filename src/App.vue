@@ -30,32 +30,8 @@
 						md="8"
 					>
 						<v-card class="mb-4">
-							<v-card-title>Team Members</v-card-title>
-							<v-card-text>
-								<UserList :users="users" />
-							</v-card-text>
-						</v-card>
-
-						<v-card>
-							<v-card-title>Activity Log</v-card-title>
-							<v-card-text>
-								<AuditLog :logs="auditLogs" />
-							</v-card-text>
-						</v-card>
-
-						<v-card class="mb-4">
-							<v-card-title>Team Calendar</v-card-title>
-							<v-card-text>
-								<Calendar
-									:users="users"
-									:important-dates="importantDates"
-								/>
-							</v-card-text>
-						</v-card>
-
-						<v-card class="mb-4">
 							<v-card-title class="d-flex">
-								{{ showPodium ? "Winners Podium" : "Points Distribution" }}
+								{{ showPodium ? "Top 3 Podium" : "Points Distribution" }}
 								<v-spacer></v-spacer>
 								<v-btn
 									icon
@@ -83,6 +59,40 @@
 									v-else
 									:users="users"
 								/>
+							</v-card-text>
+						</v-card>
+
+						<v-card class="mb-4">
+							<v-card-title class="d-flex">
+								Team Calendar
+								<v-spacer></v-spacer>
+								<v-btn
+									icon
+									variant="plain"
+									color="primary"
+								>
+									<v-icon>mdi-calendar</v-icon>
+								</v-btn>
+							</v-card-title>
+							<v-card-text>
+								<Calendar
+									:users="users"
+									:important-dates="importantDates"
+								/>
+							</v-card-text>
+						</v-card>
+
+						<v-card class="mb-4">
+							<v-card-title>Team Members</v-card-title>
+							<v-card-text>
+								<UserList :users="users" />
+							</v-card-text>
+						</v-card>
+
+						<v-card>
+							<v-card-title>Activity Log</v-card-title>
+							<v-card-text>
+								<AuditLog :logs="auditLogs" />
 							</v-card-text>
 						</v-card>
 					</v-col>
