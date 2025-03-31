@@ -29,18 +29,11 @@
 						cols="12"
 						md="8"
 					>
-						<v-card class="mb-4">
-							<v-card-title>Team Calendar</v-card-title>
-							<v-card-text>
-								<Calendar
-									:users="users"
-									:important-dates="importantDates"
-								/>
-							</v-card-text>
-						</v-card>
+					
 
 						<v-card class="mb-4">
 							<v-card-title>Winners Podium</v-card-title>
+
 							<v-card-text>
 								<Podium :users="users" />
 							</v-card-text>
@@ -48,6 +41,7 @@
 
 						<v-card class="mb-4">
 							<v-card-title>Points Distribution</v-card-title>
+							
 							<v-card-text>
 								<BarGraph :users="users" />
 							</v-card-text>
@@ -66,6 +60,16 @@
 								<AuditLog :logs="auditLogs" />
 							</v-card-text>
 						</v-card>
+
+						<v-card class="mb-4">
+							<v-card-title>Team Calendar</v-card-title>
+							<v-card-text>
+								<Calendar
+									:users="users"
+									:important-dates="importantDates"
+								/>
+							</v-card-text>
+						</v-card>
 					</v-col>
 
 					<v-col
@@ -73,8 +77,7 @@
 						md="4"
 					>
 						<v-card
-							v-if="isSupervisor"
-							class="mb-4"
+							v-if="isSupervisor" class="mb-4"
 						>
 							<v-card-title>Add New Member</v-card-title>
 							<v-card-text>

@@ -45,16 +45,13 @@ const calendarDays = computed(() => {
 	const totalDays = daysInMonth.value
 	const firstDay = firstDayOfMonth.value
 
-	// Add empty cells for days before the first day of the month
 	for (let i = 0; i < firstDay; i++) {
 		days.push({ day: '', events: [] })
 	}
 
-	// Add days of the month
 	for (let day = 1; day <= totalDays; day++) {
 		const events = []
 
-		// Check for birthdays
 		props.users.forEach((user) => {
 			if (user.birthdate) {
 				const bDate = new Date(user.birthdate)
@@ -71,7 +68,6 @@ const calendarDays = computed(() => {
 			}
 		})
 
-		// Check for important dates
 		props.importantDates.forEach((date) => {
 			const iDate = new Date(date.date)
 			if (iDate.getMonth() === currentMonth.value && iDate.getDate() === day) {
