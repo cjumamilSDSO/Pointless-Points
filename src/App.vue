@@ -18,7 +18,7 @@
 				:color="isSupervisor ? 'error' : 'success'"
 				variant="tonal"
 			>
-				{{ isSupervisor ? 'Exit Supervisor Mode' : 'Supervisor Mode' }}
+				{{ isSupervisor ? "Exit Supervisor Mode" : "Supervisor Mode" }}
 			</v-btn>
 		</v-app-bar>
 
@@ -29,24 +29,6 @@
 						cols="12"
 						md="8"
 					>
-					
-
-						<v-card class="mb-4">
-							<v-card-title>Winners Podium</v-card-title>
-
-							<v-card-text>
-								<Podium :users="users" />
-							</v-card-text>
-						</v-card>
-
-						<v-card class="mb-4">
-							<v-card-title>Points Distribution</v-card-title>
-							
-							<v-card-text>
-								<BarGraph :users="users" />
-							</v-card-text>
-						</v-card>
-
 						<v-card class="mb-4">
 							<v-card-title>Team Members</v-card-title>
 							<v-card-text>
@@ -70,6 +52,39 @@
 								/>
 							</v-card-text>
 						</v-card>
+
+						<v-card class="mb-4">
+							<v-card-title class="d-flex">
+								{{ showPodium ? "Winners Podium" : "Points Distribution" }}
+								<v-spacer></v-spacer>
+								<v-btn
+									icon
+									variant="plain"
+									color="primary"
+									@click="showPodiumView"
+								>
+									<v-icon>mdi-podium-gold</v-icon>
+								</v-btn>
+								<v-btn
+									icon
+									variant="plain"
+									color="primary"
+									@click="showBarGraphView"
+								>
+									<v-icon>mdi-chart-bar</v-icon>
+								</v-btn>
+							</v-card-title>
+							<v-card-text>
+								<Podium
+									v-if="showPodium"
+									:users="users"
+								/>
+								<BarGraph
+									v-else
+									:users="users"
+								/>
+							</v-card-text>
+						</v-card>
 					</v-col>
 
 					<v-col
@@ -77,7 +92,8 @@
 						md="4"
 					>
 						<v-card
-							v-if="isSupervisor" class="mb-4"
+							v-if="isSupervisor"
+							class="mb-4"
 						>
 							<v-card-title>Add New Member</v-card-title>
 							<v-card-text>
@@ -122,106 +138,118 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import UserList from './components/UserList.vue'
-import AddUser from './components/AddUser.vue'
-import PointsManager from './components/PointsManager.vue'
-import AuditLog from './components/AuditLog.vue'
-import Podium from './components/Podium.vue'
-import Calendar from './components/Calendar.vue'
-import ImportantDates from './components/ImportantDates.vue'
-import BarGraph from './components/BarGraph.vue'
+	import { ref, onMounted } from "vue"
+	import UserList from "./components/UserList.vue"
+	import AddUser from "./components/AddUser.vue"
+	import PointsManager from "./components/PointsManager.vue"
+	import AuditLog from "./components/AuditLog.vue"
+	import Podium from "./components/Podium.vue"
+	import Calendar from "./components/Calendar.vue"
+	import ImportantDates from "./components/ImportantDates.vue"
+	import BarGraph from "./components/BarGraph.vue"
 
-// Store users in localStorage to persist data
-const users = ref([])
-const auditLogs = ref([])
-const importantDates = ref([])
-const isSupervisor = ref(false)
+	// Store users in localStorage to persist data
+	const users = ref([])
+	const auditLogs = ref([])
+	const importantDates = ref([])
+	const isSupervisor = ref(false)
+	const showPodium = ref(true) // Add this to control which view to show
 
-// Load users from localStorage if available
-onMounted(() => {
-	const savedUsers = localStorage.getItem('roll-call-users')
-	const savedLogs = localStorage.getItem('roll-call-audit-logs')
-	const savedDates = localStorage.getItem('roll-call-important-dates')
+	// Load users from localStorage if available
+	onMounted(() => {
+		const savedUsers = localStorage.getItem("roll-call-users")
+		const savedLogs = localStorage.getItem("roll-call-audit-logs")
+		const savedDates = localStorage.getItem("roll-call-important-dates")
 
-	if (savedUsers) {
-		users.value = JSON.parse(savedUsers)
-	}
-	if (savedLogs) {
-		auditLogs.value = JSON.parse(savedLogs)
-	}
-	if (savedDates) {
-		importantDates.value = JSON.parse(savedDates)
-	}
-})
-
-// Function to add a new user
-const addUser = (user) => {
-	users.value.push({
-		id: Date.now(),
-		name: user.name,
-		role: user.role,
-		birthdate: user.birthdate,
-		color: user.color,
-		points: 0,
+		if (savedUsers) {
+			users.value = JSON.parse(savedUsers)
+		}
+		if (savedLogs) {
+			auditLogs.value = JSON.parse(savedLogs)
+		}
+		if (savedDates) {
+			importantDates.value = JSON.parse(savedDates)
+		}
 	})
-	saveUsers()
-	addAuditLog('add', `Added new team member: ${user.name} (${user.role})`)
-}
 
-// Function to save users to localStorage
-const saveUsers = () => {
-	localStorage.setItem('roll-call-users', JSON.stringify(users.value))
-}
-
-// Function to add points to a user
-const addPoints = (userId, points) => {
-	const user = users.value.find((u) => u.id === userId)
-	if (user) {
-		user.points += points
+	// Function to add a new user
+	const addUser = (user) => {
+		users.value.push({
+			id: Date.now(),
+			name: user.name,
+			role: user.role,
+			birthdate: user.birthdate,
+			color: user.color,
+			points: 0,
+		})
 		saveUsers()
-		addAuditLog(
-			'points',
-			`Awarded ${points} point${points > 1 ? 's' : ''} to ${user.name}`
+		addAuditLog("add", `Added new team member: ${user.name} (${user.role})`)
+	}
+
+	// Function to save users to localStorage
+	const saveUsers = () => {
+		localStorage.setItem("roll-call-users", JSON.stringify(users.value))
+	}
+
+	// Function to add points to a user
+	const addPoints = (userId, points) => {
+		const user = users.value.find((u) => u.id === userId)
+		if (user) {
+			user.points += points
+			saveUsers()
+			addAuditLog(
+				"points",
+				`Awarded ${points} point${points > 1 ? "s" : ""} to ${user.name}`
+			)
+		}
+	}
+
+	// Function to add an important date
+	const addImportantDate = (date) => {
+		importantDates.value.push({
+			id: Date.now(),
+			...date,
+		})
+		saveImportantDates()
+		addAuditLog("date", `Added important date: ${date.title}`)
+	}
+
+	// Function to save important dates to localStorage
+	const saveImportantDates = () => {
+		localStorage.setItem(
+			"roll-call-important-dates",
+			JSON.stringify(importantDates.value)
 		)
 	}
-}
 
-// Function to add an important date
-const addImportantDate = (date) => {
-	importantDates.value.push({
-		id: Date.now(),
-		...date,
-	})
-	saveImportantDates()
-	addAuditLog('date', `Added important date: ${date.title}`)
-}
-
-// Function to save important dates to localStorage
-const saveImportantDates = () => {
-	localStorage.setItem(
-		'roll-call-important-dates',
-		JSON.stringify(importantDates.value)
-	)
-}
-
-// Function to add an audit log
-const addAuditLog = (action, message) => {
-	const log = {
-		action,
-		message,
-		timestamp: Date.now(),
+	// Function to add an audit log
+	const addAuditLog = (action, message) => {
+		const log = {
+			action,
+			message,
+			timestamp: Date.now(),
+		}
+		auditLogs.value.unshift(log)
+		localStorage.setItem(
+			"roll-call-audit-logs",
+			JSON.stringify(auditLogs.value)
+		)
 	}
-	auditLogs.value.unshift(log)
-	localStorage.setItem('roll-call-audit-logs', JSON.stringify(auditLogs.value))
-}
 
-// Toggle supervisor mode
-const toggleSupervisor = () => {
-	isSupervisor.value = !isSupervisor.value
-}
+	// Toggle supervisor mode
+	const toggleSupervisor = () => {
+		isSupervisor.value = !isSupervisor.value
+	}
+
+	const showPodiumView = () => {
+		showPodium.value = true
+	}
+
+	const showBarGraphView = () => {
+		showPodium.value = false
+	}
 </script>
 
 <style>
-/* Remove existing styles as they're handled by Vuetify */
+	/* Remove existing styles as they're handled by Vuetify */
 </style>
