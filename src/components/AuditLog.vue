@@ -16,57 +16,57 @@
 			type="info"
 			text="No activity recorded yet."
 			class="mb-4"
-		></v-alert>
+		/>v-alert>
 	</div>
 </template>
 
 <script setup>
-defineProps({
-	logs: {
-		type: Array,
-		required: true,
-	},
-})
+	defineProps({
+		logs: {
+			type: Array,
+			required: true,
+		},
+	})
 </script>
 
 <script>
-export default {
-	methods: {
-		getActionIcon(action) {
-			switch (action) {
-				case 'add':
-					return 'mdi-account-plus'
-				case 'remove':
-					return 'mdi-account-remove'
-				case 'points':
-					return 'mdi-star'
-				case 'date':
-					return 'mdi-calendar'
-				default:
-					return 'mdi-information'
-			}
+	export default {
+		methods: {
+			getActionIcon(action) {
+				switch (action) {
+					case 'add':
+						return 'mdi-account-plus'
+					case 'remove':
+						return 'mdi-account-remove'
+					case 'points':
+						return 'mdi-star'
+					case 'date':
+						return 'mdi-calendar'
+					default:
+						return 'mdi-information'
+				}
+			},
+			getActionColor(action) {
+				switch (action) {
+					case 'add':
+						return 'success'
+					case 'remove':
+						return 'error'
+					case 'points':
+						return 'primary'
+					case 'date':
+						return 'info'
+					default:
+						return 'grey'
+				}
+			},
 		},
-		getActionColor(action) {
-			switch (action) {
-				case 'add':
-					return 'success'
-				case 'remove':
-					return 'error'
-				case 'points':
-					return 'primary'
-				case 'date':
-					return 'info'
-				default:
-					return 'grey'
-			}
-		},
-	},
-}
+	}
 </script>
 
 <style scoped>
-.audit-log {
-	max-height: 400px;
-	overflow-y: auto;
-}
+	.audit-log {
+		max-height: 400px;
+		overflow-y: auto;
+	}
 </style>

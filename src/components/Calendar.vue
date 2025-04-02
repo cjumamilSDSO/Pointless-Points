@@ -1,5 +1,5 @@
 <script setup>
-	import { ref, computed } from "vue"
+	import { ref, computed } from 'vue'
 
 	const props = defineProps({
 		users: {
@@ -18,18 +18,18 @@
 	const currentYear = ref(currentDate.getFullYear())
 
 	const months = [
-		"January",
-		"February",
-		"March",
-		"April",
-		"May",
-		"June",
-		"July",
-		"August",
-		"September",
-		"October",
-		"November",
-		"December",
+		'January',
+		'February',
+		'March',
+		'April',
+		'May',
+		'June',
+		'July',
+		'August',
+		'September',
+		'October',
+		'November',
+		'December',
 	]
 
 	const daysInMonth = computed(() => {
@@ -46,7 +46,7 @@
 		const firstDay = firstDayOfMonth.value
 
 		for (let i = 0; i < firstDay; i++) {
-			days.push({ day: "", events: [] })
+			days.push({ day: '', events: [] })
 		}
 
 		for (let day = 1; day <= totalDays; day++) {
@@ -60,9 +60,9 @@
 						bDate.getDate() === day
 					) {
 						events.push({
-							type: "birthday",
+							type: 'birthday',
 							title: `${user.name}'s Birthday`,
-							color: "primary",
+							color: 'primary',
 						})
 					}
 				}
@@ -75,9 +75,9 @@
 					iDate.getDate() === day
 				) {
 					events.push({
-						type: "important",
+						type: 'important',
 						title: date.title,
-						color: date.color || "error",
+						color: date.color || 'error',
 					})
 				}
 			})
@@ -113,12 +113,12 @@
 			<v-btn
 				icon="mdi-chevron-left"
 				@click="prevMonth"
-			></v-btn>
+			/>v-btn>
 			<h3>{{ months[currentMonth] }} {{ currentYear }}</h3>
 			<v-btn
 				icon="mdi-chevron-right"
 				@click="nextMonth"
-			></v-btn>
+			/>v-btn>
 		</div>
 
 		<div class="calendar-grid">

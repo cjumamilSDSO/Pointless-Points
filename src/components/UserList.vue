@@ -54,10 +54,10 @@
 	export default {
 		methods: {
 			getPointsColor(points) {
-				if (points >= 100) return "success"
-				if (points >= 50) return "info"
-				if (points >= 20) return "warning"
-				return "grey"
+				if (points >= 100) return 'success'
+				if (points >= 50) return 'info'
+				if (points >= 20) return 'warning'
+				return 'grey'
 			},
 		},
 	}
