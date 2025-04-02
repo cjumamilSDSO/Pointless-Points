@@ -54,8 +54,9 @@
 									color="primary"
 									@click="showAddUserDialog = true"
 								>
-									<v-icon> mdi-plus-circle-outline</v-icon>
+									<v-icon> mdi-account-plus-outline</v-icon>
 								</v-btn>
+
 								<v-btn
 									icon
 									variant="plain"
