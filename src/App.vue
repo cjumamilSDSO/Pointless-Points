@@ -18,7 +18,7 @@
 				:color="isSupervisor ? 'error' : 'success'"
 				variant="tonal"
 			>
-				{{ isSupervisor ? "Exit Supervisor Mode" : "Supervisor Mode" }}
+				{{ isSupervisor ? 'Exit Supervisor Mode' : 'Supervisor Mode' }}
 			</v-btn>
 		</v-app-bar>
 
@@ -27,41 +27,15 @@
 				<v-row>
 					<v-col
 						cols="12"
-						md="8"
+						md="6"
 					>
 						<v-card class="mb-4">
-							<v-card-title class="d-flex">
-								{{ showPodium ? "Top 3 Podium" : "Points Distribution" }}
-								<v-spacer></v-spacer>
-								<v-btn
-									icon
-									variant="plain"
-									color="primary"
-									@click="showPodiumView"
-								>
-									<v-icon>mdi-podium-gold</v-icon>
-								</v-btn>
-								<v-btn
-									icon
-									variant="plain"
-									color="primary"
-									@click="showBarGraphView"
-								>
-									<v-icon>mdi-chart-bar</v-icon>
-								</v-btn>
-							</v-card-title>
+							<v-card-title class="d-flex"> Top 3 Podium </v-card-title>
+
 							<v-card-text>
-								<Podium
-									v-if="showPodium"
-									:users="users"
-								/>
-								<BarGraph
-									v-else
-									:users="users"
-								/>
+								<Podium :users="users" />
 							</v-card-text>
 						</v-card>
-
 						<v-card class="mb-4">
 							<v-card-title class="d-flex">
 								Team Calendar
@@ -70,22 +44,13 @@
 									icon
 									variant="plain"
 									color="primary"
-								>
-									<v-icon>mdi-calendar</v-icon>
-								</v-btn>
+								/>
 							</v-card-title>
 							<v-card-text>
 								<Calendar
 									:users="users"
 									:important-dates="importantDates"
 								/>
-							</v-card-text>
-						</v-card>
-
-						<v-card class="mb-4">
-							<v-card-title>Team Members</v-card-title>
-							<v-card-text>
-								<UserList :users="users" />
 							</v-card-text>
 						</v-card>
 
@@ -99,13 +64,60 @@
 
 					<v-col
 						cols="12"
-						md="4"
+						md="6"
 					>
+						<v-card class="mb-4">
+							<v-card-title class="d-flex">
+								{{ showListView ? 'List View' : 'Graph View' }}
+
+								<v-spacer></v-spacer>
+
+								<v-btn
+									v-if="showListView"
+									icon
+									variant="plain"
+									color="primary"
+								>
+									<v-icon> mdi-plus-circle-outline</v-icon>
+								</v-btn>
+
+								<v-btn
+									icon
+									variant="plain"
+									color="primary"
+									@click="showList"
+								>
+									<v-icon> mdi-list-box-outline</v-icon>
+								</v-btn>
+
+								<v-btn
+									icon
+									variant="plain"
+									color="primary"
+									@click="showBarGraphView"
+								>
+									<v-icon> mdi-chart-bar</v-icon>
+								</v-btn>
+							</v-card-title>
+
+							<v-card-text>
+								<UserList
+									v-if="showListView"
+									:users="users"
+								/>
+								<BarGraph
+									v-else
+									:users="users"
+								/>
+							</v-card-text>
+						</v-card>
+
 						<v-card
 							v-if="isSupervisor"
 							class="mb-4"
 						>
 							<v-card-title>Add New Member</v-card-title>
+
 							<v-card-text>
 								<AddUser @add-user="addUser" />
 							</v-card-text>
@@ -148,28 +160,28 @@
 </template>
 
 <script setup>
-	import { ref, onMounted } from "vue"
-	import UserList from "./components/UserList.vue"
-	import AddUser from "./components/AddUser.vue"
-	import PointsManager from "./components/PointsManager.vue"
-	import AuditLog from "./components/AuditLog.vue"
-	import Podium from "./components/Podium.vue"
-	import Calendar from "./components/Calendar.vue"
-	import ImportantDates from "./components/ImportantDates.vue"
-	import BarGraph from "./components/BarGraph.vue"
+	import { ref, onMounted } from 'vue'
+	import UserList from './components/UserList.vue'
+	import AddUser from './components/AddUser.vue'
+	import PointsManager from './components/PointsManager.vue'
+	import AuditLog from './components/AuditLog.vue'
+	import Podium from './components/Podium.vue'
+	import Calendar from './components/Calendar.vue'
+	import ImportantDates from './components/ImportantDates.vue'
+	import BarGraph from './components/BarGraph.vue'
 
 	// Store users in localStorage to persist data
 	const users = ref([])
 	const auditLogs = ref([])
 	const importantDates = ref([])
 	const isSupervisor = ref(false)
-	const showPodium = ref(true) // Add this to control which view to show
+	const showListView = ref(true) // Add this to control which view to show
 
 	// Load users from localStorage if available
 	onMounted(() => {
-		const savedUsers = localStorage.getItem("roll-call-users")
-		const savedLogs = localStorage.getItem("roll-call-audit-logs")
-		const savedDates = localStorage.getItem("roll-call-important-dates")
+		const savedUsers = localStorage.getItem('roll-call-users')
+		const savedLogs = localStorage.getItem('roll-call-audit-logs')
+		const savedDates = localStorage.getItem('roll-call-important-dates')
 
 		if (savedUsers) {
 			users.value = JSON.parse(savedUsers)
@@ -193,12 +205,12 @@
 			points: 0,
 		})
 		saveUsers()
-		addAuditLog("add", `Added new team member: ${user.name} (${user.role})`)
+		addAuditLog('add', `Added new team member: ${user.name} (${user.role})`)
 	}
 
 	// Function to save users to localStorage
 	const saveUsers = () => {
-		localStorage.setItem("roll-call-users", JSON.stringify(users.value))
+		localStorage.setItem('roll-call-users', JSON.stringify(users.value))
 	}
 
 	// Function to add points to a user
@@ -208,8 +220,8 @@
 			user.points += points
 			saveUsers()
 			addAuditLog(
-				"points",
-				`Awarded ${points} point${points > 1 ? "s" : ""} to ${user.name}`
+				'points',
+				`Awarded ${points} point${points > 1 ? 's' : ''} to ${user.name}`
 			)
 		}
 	}
@@ -221,13 +233,13 @@
 			...date,
 		})
 		saveImportantDates()
-		addAuditLog("date", `Added important date: ${date.title}`)
+		addAuditLog('date', `Added important date: ${date.title}`)
 	}
 
 	// Function to save important dates to localStorage
 	const saveImportantDates = () => {
 		localStorage.setItem(
-			"roll-call-important-dates",
+			'roll-call-important-dates',
 			JSON.stringify(importantDates.value)
 		)
 	}
@@ -241,7 +253,7 @@
 		}
 		auditLogs.value.unshift(log)
 		localStorage.setItem(
-			"roll-call-audit-logs",
+			'roll-call-audit-logs',
 			JSON.stringify(auditLogs.value)
 		)
 	}
@@ -251,15 +263,11 @@
 		isSupervisor.value = !isSupervisor.value
 	}
 
-	const showPodiumView = () => {
-		showPodium.value = true
+	const showList = () => {
+		showListView.value = true
 	}
 
 	const showBarGraphView = () => {
-		showPodium.value = false
+		showListView.value = false
 	}
 </script>
-
-<style>
-	/* Remove existing styles as they're handled by Vuetify */
-</style>
