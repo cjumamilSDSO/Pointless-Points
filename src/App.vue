@@ -24,6 +24,7 @@
 
 		<v-main>
 			<v-container>
+				<!-- First Row - Podium -->
 				<v-row>
 					<v-col
 						cols="12"
@@ -31,37 +32,13 @@
 					>
 						<v-card class="mb-4">
 							<v-card-title class="d-flex"> Top 3 Podium </v-card-title>
-
 							<v-card-text>
 								<Podium :users="users" />
 							</v-card-text>
 						</v-card>
-						<v-card class="mb-4">
-							<v-card-title class="d-flex">
-								Team Calendar
-								<v-spacer></v-spacer>
-								<v-btn
-									icon
-									variant="plain"
-									color="primary"
-								/>
-							</v-card-title>
-							<v-card-text>
-								<Calendar
-									:users="users"
-									:important-dates="importantDates"
-								/>
-							</v-card-text>
-						</v-card>
-
-						<v-card>
-							<v-card-title>Activity Log</v-card-title>
-							<v-card-text>
-								<AuditLog :logs="auditLogs" />
-							</v-card-text>
-						</v-card>
 					</v-col>
 
+					<!-- Points Management View -->
 					<v-col
 						cols="12"
 						md="6"
@@ -69,18 +46,16 @@
 						<v-card class="mb-4">
 							<v-card-title class="d-flex">
 								{{ showListView ? 'List View' : 'Graph View' }}
-
 								<v-spacer></v-spacer>
-
 								<v-btn
-									v-if="showListView"
+									v-if="showListView && isSupervisor"
 									icon
 									variant="plain"
 									color="primary"
+									@click="showAddUserDialog = true"
 								>
 									<v-icon> mdi-plus-circle-outline</v-icon>
 								</v-btn>
-
 								<v-btn
 									icon
 									variant="plain"
@@ -89,7 +64,6 @@
 								>
 									<v-icon> mdi-list-box-outline</v-icon>
 								</v-btn>
-
 								<v-btn
 									icon
 									variant="plain"
@@ -99,7 +73,6 @@
 									<v-icon> mdi-chart-bar</v-icon>
 								</v-btn>
 							</v-card-title>
-
 							<v-card-text>
 								<UserList
 									v-if="showListView"
@@ -111,40 +84,119 @@
 								/>
 							</v-card-text>
 						</v-card>
+					</v-col>
+				</v-row>
 
-						<v-card
-							v-if="isSupervisor"
-							class="mb-4"
-						>
-							<v-card-title>Add New Member</v-card-title>
-
+				<!-- Second Row - Calendar -->
+				<v-row>
+					<v-col
+						cols="12"
+						md="6"
+					>
+						<v-card class="mb-4">
+							<v-card-title class="d-flex">
+								Team Calendar
+								<v-spacer></v-spacer>
+								<v-btn
+									v-if="showListView && isSupervisor"
+									icon
+									variant="plain"
+									color="primary"
+									@click="showImportantDateDialog = true"
+								>
+									<v-icon> mdi-plus-circle-outline</v-icon>
+								</v-btn>
+							</v-card-title>
 							<v-card-text>
-								<AddUser @add-user="addUser" />
-							</v-card-text>
-						</v-card>
-
-						<v-card
-							v-if="isSupervisor"
-							class="mb-4"
-						>
-							<v-card-title>Add Important Date</v-card-title>
-							<v-card-text>
-								<ImportantDates @add-date="addImportantDate" />
-							</v-card-text>
-						</v-card>
-
-						<v-card v-if="isSupervisor">
-							<v-card-title>Manage Points</v-card-title>
-							<v-card-text>
-								<PointsManager
+								<Calendar
 									:users="users"
-									@add-points="addPoints"
+									:important-dates="importantDates"
 								/>
+							</v-card-text>
+						</v-card>
+					</v-col>
+
+					<!-- Activity Log -->
+					<v-col
+						cols="12"
+						md="6"
+					>
+						<v-card class="mb-4">
+							<v-card-title>Activity Log</v-card-title>
+							<v-card-text>
+								<AuditLog :logs="auditLogs" />
 							</v-card-text>
 						</v-card>
 					</v-col>
 				</v-row>
 			</v-container>
+
+			<!-- Dialogs -->
+			<v-dialog
+				v-model="showAddUserDialog"
+				max-width="500px"
+			>
+				<v-card>
+					<v-card-title>Add New Member</v-card-title>
+					<v-card-text>
+						<AddUser @add-user="addUserAndClose" />
+					</v-card-text>
+					<v-card-actions>
+						<v-spacer></v-spacer>
+						<v-btn
+							color="primary"
+							variant="text"
+							@click="showAddUserDialog = false"
+							>Close</v-btn
+						>
+					</v-card-actions>
+				</v-card>
+			</v-dialog>
+
+			<v-dialog
+				v-model="showImportantDateDialog"
+				max-width="500px"
+			>
+				<v-card>
+					<v-card-title>Add Important Date</v-card-title>
+					<v-card-text>
+						<ImportantDates @add-date="addDateAndClose" />
+					</v-card-text>
+					<v-card-actions>
+						<v-spacer></v-spacer>
+						<v-btn
+							color="primary"
+							variant="text"
+							@click="showImportantDateDialog = false"
+							>Close</v-btn
+						>
+					</v-card-actions>
+				</v-card>
+			</v-dialog>
+
+			<v-dialog
+				v-model="showPointsManagerDialog"
+				max-width="500px"
+			>
+				<v-card>
+					<v-card-title>Manage Points</v-card-title>
+					<v-card-text>
+						<PointsManager
+							:users="users"
+							@add-points="addPointsAndClose"
+						/>
+					</v-card-text>
+					<v-card-actions>
+						<v-spacer></v-spacer>
+						<v-btn
+							color="primary"
+							variant="text"
+							@click="showPointsManagerDialog = false"
+							>Close</v-btn
+						>
+					</v-card-actions>
+				</v-card>
+			</v-dialog>
 		</v-main>
 
 		<v-footer
@@ -162,12 +214,12 @@
 <script setup>
 	import { ref, onMounted } from 'vue'
 	import UserList from './components/UserList.vue'
-	import AddUser from './components/AddUser.vue'
-	import PointsManager from './components/PointsManager.vue'
+	import AddUser from './components/dialogs/AddUserDialog.vue'
+	import PointsManager from './components/dialogs/ManagePointsDialog.vue'
 	import AuditLog from './components/AuditLog.vue'
 	import Podium from './components/Podium.vue'
 	import Calendar from './components/Calendar.vue'
-	import ImportantDates from './components/ImportantDates.vue'
+	import ImportantDates from './components/dialogs/AddCalendarEventDialog.vue'
 	import BarGraph from './components/BarGraph.vue'
 
 	// Store users in localStorage to persist data
@@ -176,6 +228,11 @@
 	const importantDates = ref([])
 	const isSupervisor = ref(false)
 	const showListView = ref(true) // Add this to control which view to show
+
+	// Add dialog control refs
+	const showAddUserDialog = ref(false)
+	const showImportantDateDialog = ref(false)
+	const showPointsManagerDialog = ref(false)
 
 	// Load users from localStorage if available
 	onMounted(() => {
@@ -269,5 +326,21 @@
 
 	const showBarGraphView = () => {
 		showListView.value = false
+	}
+
+	// Modify existing methods to close dialogs after actions
+	const addUserAndClose = (user) => {
+		addUser(user)
+		showAddUserDialog.value = false
+	}
+
+	const addDateAndClose = (date) => {
+		addImportantDate(date)
+		showImportantDateDialog.value = false
+	}
+
+	const addPointsAndClose = (userId, points) => {
+		addPoints(userId, points)
+		showPointsManagerDialog.value = false
 	}
 </script>
