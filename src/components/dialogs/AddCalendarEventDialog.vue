@@ -4,14 +4,14 @@
 			v-model="newDate.title"
 			label="Event Title"
 			required
-		></v-text-field>
+		/>
 
 		<v-text-field
 			v-model="newDate.date"
 			label="Date"
 			type="date"
 			required
-		></v-text-field>
+		/>
 
 		<v-textarea
 			v-model="newDate.description"

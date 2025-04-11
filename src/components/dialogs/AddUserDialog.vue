@@ -1,105 +1,109 @@
 <template>
-	<v-form
-		ref="form"
-		@submit.prevent="submitForm"
-	>
-		<v-text-field
-			v-model="newUser.name"
-			label="Name"
-			:rules="[rules.required]"
-			variant="outlined"
-		></v-text-field>
+  <v-form ref="form" @submit.prevent="submitForm">
+    <v-text-field
+      v-model="newUser.name"
+      label="Name"
+      :rules="[rules.required]"
+      variant="outlined"
+    />
 
-		<v-text-field
-			v-model="newUser.role"
-			label="Role"
-			:rules="[rules.required]"
-			variant="outlined"
-		></v-text-field>
+    <v-text-field
+      v-model="newUser.role"
+      label="Role"
+      :rules="[rules.required]"
+      variant="outlined"
+    />
 
-		<v-text-field
-			v-model="newUser.birthdate"
-			label="Birthdate"
-			type="date"
-			:rules="[rules.required]"
-			variant="outlined"
-		></v-text-field>
+    <v-text-field
+      v-model="newUser.birthdate"
+      label="Birthdate"
+      type="date"
+      :rules="[rules.required]"
+      variant="outlined"
+    />
 
-		<v-color-picker
-			v-model="newUser.color"
-			mode="hex"
-			hide-inputs
-			class="mb-4"
-			width="100%"
-			style="width: 1000px"
-			show-swatches
-			hide-canvas
-			hide-sliders
-		></v-color-picker>
+    <span
+      v-if="newUser.name"
+      class="mb-4"
+      style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      "
+    >
+      Assign&nbsp;<strong>{{ newUser.name }}</strong
+      >&nbsp;a color 🎨
+    </span>
 
-		<v-alert
-			v-if="error"
-			type="error"
-			text="${error}"
-			class="mb-4"
-		></v-alert>
+    <v-color-picker
+      v-model="newUser.color"
+      mode="hex"
+      hide-inputs
+      class="mb-5"
+      width="100%"
+      show-swatches
+      hide-canvas
+      hide-sliders
+    ></v-color-picker>
 
-		<v-btn
-			:color="newUser.color || primary"
-			type="submit"
-			block
-			:loading="loading"
-		>
-			Add Member
-		</v-btn>
-	</v-form>
+    <v-alert v-if="error" type="error" text="${error}" class="mb-4"></v-alert>
+
+    <v-btn
+      :color="newUser.color || primary"
+      type="submit"
+      block
+      :loading="loading"
+    >
+      Add Member
+    </v-btn>
+  </v-form>
 </template>
 
 <script setup>
-	import { ref } from 'vue'
+import { ref } from "vue";
 
-	const emit = defineEmits(['add-user'])
-	const form = ref(null)
-	const error = ref('')
-	const loading = ref(false)
+const emit = defineEmits(["add-user"]);
+const form = ref(null);
+const error = ref("");
+const loading = ref(false);
 
-	const rules = {
-		required: (value) => !!value || 'This field is required',
-	}
+const rules = {
+  required: (value) => !!value || "This field is required",
+};
 
-	const newUser = ref({
-		name: '',
-		role: '',
-		birthdate: '',
-		color: '#1976D2',
-	})
+const newUser = ref({
+  name: "",
+  role: "",
+  birthdate: "",
+  color: "#1976D2",
+});
 
-	const submitForm = async () => {
-		error.value = ''
-		loading.value = true
+const submitForm = async () => {
+  error.value = "";
+  loading.value = true;
 
-		const { valid } = await form.value.validate()
+  const { valid } = await form.value.validate();
 
-		if (!valid) {
-			loading.value = false
-			return
-		}
+  if (!valid) {
+    loading.value = false;
+    return;
+  }
 
-		emit('add-user', {
-			name: newUser.value.name.trim(),
-			role: newUser.value.role.trim(),
-			birthdate: newUser.value.birthdate,
-			color: newUser.value.color,
-		})
+  emit("add-user", {
+    name: newUser.value.name.trim(),
+    role: newUser.value.role.trim(),
+    birthdate: newUser.value.birthdate,
+    color: newUser.value.color,
+  });
 
-		// Reset form
-		form.value.reset()
-		newUser.value = {
-			name: '',
-			role: '',
-			birthdate: '',
-			color: '#1976D2',
-		}
-		loading.value = false
-	}
+  form.value.reset();
+  newUser.value = {
+    name: "",
+    role: "",
+    birthdate: "",
+    color: "#1976D2",
+  };
+  loading.value = false;
+};
 </script>

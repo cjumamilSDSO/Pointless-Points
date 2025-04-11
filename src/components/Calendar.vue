@@ -1,3 +1,53 @@
+<template>
+	<div class="calendar">
+		<div class="calendar-header">
+			<v-btn
+				icon="mdi-chevron-left"
+				@click="prevMonth"
+			/>
+			<h3>{{ months[currentMonth] }} {{ currentYear }}</h3>
+			<v-btn
+				icon="mdi-chevron-right"
+				@click="nextMonth"
+			/>
+		</div>
+
+		<div class="calendar-grid">
+			<div class="calendar-day-header">Sun</div>
+			<div class="calendar-day-header">Mon</div>
+			<div class="calendar-day-header">Tue</div>
+			<div class="calendar-day-header">Wed</div>
+			<div class="calendar-day-header">Thu</div>
+			<div class="calendar-day-header">Fri</div>
+			<div class="calendar-day-header">Sat</div>
+
+			<div
+				v-for="(dayData, index) in calendarDays"
+				:key="index"
+				class="calendar-day"
+				:class="{ empty: !dayData.day }"
+			>
+				<div class="day-number">{{ dayData.day }}</div>
+				<div class="day-events">
+					<v-chip
+						v-for="(event, eventIndex) in dayData.events"
+						:key="eventIndex"
+						:color="event.color"
+						size="x-small"
+						class="mt-1"
+						:prepend-icon="
+							event.type === 'birthday' ? 'mdi-cake-variant' : 'mdi-star'
+						"
+					>
+						{{ event.title }}
+					</v-chip>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+
 <script setup>
 	import { ref, computed } from 'vue'
 
@@ -106,55 +156,6 @@
 		}
 	}
 </script>
-
-<template>
-	<div class="calendar">
-		<div class="calendar-header">
-			<v-btn
-				icon="mdi-chevron-left"
-				@click="prevMonth"
-			/>v-btn>
-			<h3>{{ months[currentMonth] }} {{ currentYear }}</h3>
-			<v-btn
-				icon="mdi-chevron-right"
-				@click="nextMonth"
-			/>v-btn>
-		</div>
-
-		<div class="calendar-grid">
-			<div class="calendar-day-header">Sun</div>
-			<div class="calendar-day-header">Mon</div>
-			<div class="calendar-day-header">Tue</div>
-			<div class="calendar-day-header">Wed</div>
-			<div class="calendar-day-header">Thu</div>
-			<div class="calendar-day-header">Fri</div>
-			<div class="calendar-day-header">Sat</div>
-
-			<div
-				v-for="(dayData, index) in calendarDays"
-				:key="index"
-				class="calendar-day"
-				:class="{ empty: !dayData.day }"
-			>
-				<div class="day-number">{{ dayData.day }}</div>
-				<div class="day-events">
-					<v-chip
-						v-for="(event, eventIndex) in dayData.events"
-						:key="eventIndex"
-						:color="event.color"
-						size="x-small"
-						class="mt-1"
-						:prepend-icon="
-							event.type === 'birthday' ? 'mdi-cake-variant' : 'mdi-star'
-						"
-					>
-						{{ event.title }}
-					</v-chip>
-				</div>
-			</div>
-		</div>
-	</div>
-</template>
 
 <style scoped>
 	.calendar {

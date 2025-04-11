@@ -16,7 +16,7 @@
 			type="info"
 			text="No activity recorded yet."
 			class="mb-4"
-		/>v-alert>
+		/>
 	</div>
 </template>
 
