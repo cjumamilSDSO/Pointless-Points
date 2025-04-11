@@ -28,7 +28,7 @@
           <v-col>
             <v-card>
               <v-card-text>
-                <strong>Announcements:</strong> 
+                <strong>Announcements:</strong>
               </v-card-text>
             </v-card>
           </v-col>
@@ -139,7 +139,7 @@
 
       <v-dialog v-model="showImportantDateDialog" max-width="500px">
         <v-card>
-          <v-card-title>Add Important Date</v-card-title>
+          <v-card-title>Add an Event</v-card-title>
 
           <v-card-text>
             <ImportantDates @add-date="addDateAndClose" />
@@ -262,12 +262,29 @@ const addPoints = (userId, points) => {
 
 // Function to add an important date
 const addImportantDate = (date) => {
+  // Format descriptive text for recurrence
+  let recurringText = "";
+  if (date.isRecurring) {
+    if (date.recurrenceType === "custom") {
+      recurringText = ` (every ${date.recurrenceInterval} ${date.recurrenceUnit})`;
+    } else {
+      recurringText = ` (${date.recurrenceType} recurring event)`;
+    }
+  }
+
   importantDates.value.push({
     id: Date.now(),
     ...date,
+    color: date.isRecurring ? "secondary" : "error", // Different color for recurring events
   });
+
   saveImportantDates();
-  addAuditLog("date", `Added important date: ${date.title}`);
+  addAuditLog(
+    "date",
+    `Added ${date.isRecurring ? "recurring" : "important"} date: ${
+      date.title
+    }${recurringText}`
+  );
 };
 
 // Function to save important dates to localStorage
