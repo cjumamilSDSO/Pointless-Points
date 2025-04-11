@@ -19,9 +19,9 @@
         v-for="(dayData, index) in calendarDays"
         :key="index"
         class="calendar-day"
-        :class="{ 
+        :class="{
           empty: !dayData.day,
-          'current-day': isCurrentDay(dayData.day)
+          'current-day': isCurrentDay(dayData.day),
         }"
       >
         <div class="day-number">{{ dayData.day }}</div>
@@ -97,51 +97,54 @@ const getEventIcon = (type) => {
 
 // Function to check if a date falls on a custom recurrence pattern
 const isCustomRecurrenceMatch = (originalDate, currentDate, interval, unit) => {
-  const originalTime = originalDate.getTime();
-  const currentTime = currentDate.getTime();
-
   // Event must start on or after the original date
-  if (currentTime < originalTime) return false;
+  if (currentDate < originalDate) return false;
 
-  // Calculate time difference in milliseconds
-  const timeDiff = currentTime - originalTime;
+  // Get integer representations of both dates to ensure correct comparisons
+  const origYear = originalDate.getFullYear();
+  const origMonth = originalDate.getMonth();
+  const origDate = originalDate.getDate();
+  const origDay = originalDate.getDay();
 
-  // Convert interval to milliseconds based on unit
-  let unitInMs;
+  const currYear = currentDate.getFullYear();
+  const currMonth = currentDate.getMonth();
+  const currDate = currentDate.getDate();
+  const currDay = currentDate.getDay();
+
   switch (unit) {
     case "days":
-      unitInMs = 24 * 60 * 60 * 1000;
-      break;
+      // Calculate days between dates
+      const dayDiff = Math.round(
+        (currentDate - originalDate) / (24 * 60 * 60 * 1000)
+      );
+      return dayDiff % interval === 0;
+
     case "weeks":
-      unitInMs = 7 * 24 * 60 * 60 * 1000;
-      break;
+      // For weekly recurrence: same day of week and the week difference is divisible by interval
+      if (origDay !== currDay) return false;
+
+      const weekDiff = Math.floor(
+        (currentDate - originalDate) / (7 * 24 * 60 * 60 * 1000)
+      );
+      return weekDiff % interval === 0;
+
     case "months":
-      // For months, we need to check if the date matches rather than just ms
-      const monthDiff =
-        (currentDate.getFullYear() - originalDate.getFullYear()) * 12 +
-        (currentDate.getMonth() - originalDate.getMonth());
-      return (
-        monthDiff % interval === 0 &&
-        currentDate.getDate() === originalDate.getDate()
-      );
+      // For monthly recurrence: same day of month and month difference is divisible by interval
+      if (origDate !== currDate) return false;
+
+      const monthDiff = (currYear - origYear) * 12 + (currMonth - origMonth);
+      return monthDiff % interval === 0;
+
     case "years":
-      // For years, check if month and day match, and the year difference is divisible by interval
-      const yearDiff = currentDate.getFullYear() - originalDate.getFullYear();
-      return (
-        yearDiff % interval === 0 &&
-        currentDate.getMonth() === originalDate.getMonth() &&
-        currentDate.getDate() === originalDate.getDate()
-      );
+      // For yearly recurrence: same month and day, and year difference is divisible by interval
+      if (origMonth !== currMonth || origDate !== currDate) return false;
+
+      const yearDiff = currYear - origYear;
+      return yearDiff % interval === 0;
+
     default:
       return false;
   }
-
-  // For days and weeks, check if the time difference is divisible by the interval
-  if (unit === "days" || unit === "weeks") {
-    return Math.round(timeDiff / unitInMs) % interval === 0;
-  }
-
-  return false;
 };
 
 const calendarDays = computed(() => {
@@ -316,6 +319,7 @@ const prevMonth = () => {
   border: 1px solid var(--v-border-color);
   border-radius: 4px;
   position: relative;
+  overflow: hidden;
 }
 
 .calendar-day.current-day {
@@ -330,7 +334,7 @@ const prevMonth = () => {
 }
 
 .calendar-day.current-day::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 4px;
   right: 4px;
@@ -353,11 +357,28 @@ const prevMonth = () => {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  max-height: calc(100% - 24px);
+  overflow-y: auto;
+}
+
+.day-events .v-chip {
+  margin: 1px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  font-size: 0.7rem;
+  height: auto !important;
+  padding: 1px 4px;
 }
 
 @media (max-width: 960px) {
   .calendar-day {
     min-height: 60px;
+  }
+
+  .day-events .v-chip {
+    font-size: 0.65rem;
   }
 }
 </style>

@@ -1,13 +1,15 @@
 <template>
   <v-form @submit.prevent="addDate">
-    <v-text-field v-model="newDate.title" label="Event Title" required />
+    <v-text-field v-model="newDate.title" label="Event Title" required dense />
 
-    <v-text-field v-model="newDate.date" label="Date" type="date" required />
+    <v-text-field v-model="newDate.date" label="Date" type="date" required dense />
 
     <v-textarea
       v-model="newDate.description"
       label="Description"
-      rows="3"
+      rows="2"
+      dense
+      auto-grow
     ></v-textarea>
 
     <v-switch
@@ -15,7 +17,8 @@
       label="Recurring Event"
       color="primary"
       hide-details
-      class="mb-2"
+      class="mb-1"
+      density="compact"
     ></v-switch>
 
     <v-expand-transition>
@@ -26,18 +29,19 @@
           label="Recurrence Type"
           required
           @update:model-value="handleRecurrenceTypeChange"
+          dense
         ></v-select>
 
         <v-expand-transition>
-          <div v-if="newDate.recurrenceType === 'custom'" class="d-flex gap-2">
+          <div v-if="newDate.recurrenceType === 'custom'" class="custom-recurrence">
             <v-text-field
               v-model.number="newDate.recurrenceInterval"
               label="Repeat every"
               type="number"
               min="1"
               required
-              class="flex-grow-0 flex-shrink-0"
-              style="width: 100px"
+              class="recurrence-interval"
+              dense
             />
 
             <v-select
@@ -45,14 +49,15 @@
               :items="recurrenceUnits"
               label="Unit"
               required
-              class="flex-grow-1"
+              class="recurrence-unit"
+              dense
             ></v-select>
           </div>
         </v-expand-transition>
       </div>
     </v-expand-transition>
 
-    <v-btn color="primary" type="submit" block class="mt-4"> Add Event </v-btn>
+    <v-btn color="primary" type="submit" block class="mt-2" size="small"> Add Event </v-btn>
   </v-form>
 </template>
 
@@ -82,14 +87,14 @@ const newDate = ref({
   isRecurring: false,
   recurrenceType: "yearly",
   recurrenceInterval: 1,
-  recurrenceUnit: "days",
+  recurrenceUnit: "weeks", // Changed default to weeks
 });
 
 const handleRecurrenceTypeChange = () => {
   // Reset custom values if switching away from custom
   if (newDate.value.recurrenceType !== "custom") {
     newDate.value.recurrenceInterval = 1;
-    newDate.value.recurrenceUnit = "days";
+    newDate.value.recurrenceUnit = "weeks"; // Changed default to weeks
   }
 };
 
@@ -122,7 +127,24 @@ const addDate = () => {
     isRecurring: false,
     recurrenceType: "yearly",
     recurrenceInterval: 1,
-    recurrenceUnit: "days",
+    recurrenceUnit: "weeks", // Changed default to weeks
   };
 };
 </script>
+
+<style scoped>
+.custom-recurrence {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.recurrence-interval {
+  flex: 0 0 100px;
+}
+
+.recurrence-unit {
+  flex: 1;
+}
+</style>
