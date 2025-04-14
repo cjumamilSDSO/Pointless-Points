@@ -1,9 +1,13 @@
 <template>
   <div class="calendar">
     <div class="calendar-header">
-      <v-btn icon="mdi-chevron-left" @click="prevMonth" />
+      <v-btn @click="prevMonth" variant="plain" icon>
+        <v-icon> mdi-chevron-left </v-icon>
+      </v-btn>
       <h3>{{ months[currentMonth] }} {{ currentYear }}</h3>
-      <v-btn icon="mdi-chevron-right" @click="nextMonth" />
+      <v-btn @click="nextMonth" variant="plain" icon>
+        <v-icon>mdi-chevron-right</v-icon>
+      </v-btn>
     </div>
 
     <div class="calendar-grid">
@@ -33,17 +37,35 @@
             size="x-small"
             class="mt-1"
             :prepend-icon="getEventIcon(event.type)"
+            @click="openEventDialog(event, eventIndex, dayData)"
+            role="button"
+            :class="{ 'cursor-pointer': true }"
           >
             {{ event.title }}
           </v-chip>
         </div>
       </div>
     </div>
+
+    <!-- Event Details Dialog -->
+    <EventDetailsDialog
+      v-if="selectedEvent"
+      :event="selectedEvent"
+      :event-id="selectedEventId"
+      :current-date="selectedEventDate"
+      v-model:showDialog="showEventDialog"
+      @update-event="updateEvent"
+      @update-single-occurrence="updateSingleOccurrence"
+      @delete-event="deleteEvent"
+      @delete-single-occurrence="deleteSingleOccurrence"
+      @close="closeEventDialog"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from "vue";
+import EventDetailsDialog from "./dialogs/EventDetailsDialog.vue";
 
 const props = defineProps({
   users: {
@@ -56,6 +78,19 @@ const props = defineProps({
     default: () => [],
   },
 });
+
+const emit = defineEmits([
+  "update-event",
+  "delete-event",
+  "update-single-occurrence",
+  "delete-single-occurrence",
+]);
+
+// Dialog control and selected event
+const showEventDialog = ref(false);
+const selectedEvent = ref(null);
+const selectedEventId = ref(null);
+const selectedEventDate = ref(null);
 
 const currentDate = new Date();
 const currentMonth = ref(currentDate.getMonth());
@@ -160,6 +195,7 @@ const calendarDays = computed(() => {
   for (let day = 1; day <= totalDays; day++) {
     const events = [];
     const currentDateObj = new Date(currentYear.value, currentMonth.value, day);
+    const currentDateKey = currentDateObj.toISOString().split("T")[0]; // YYYY-MM-DD format
 
     // Add birthday events
     props.users.forEach((user) => {
@@ -182,6 +218,25 @@ const calendarDays = computed(() => {
     props.importantDates.forEach((date) => {
       const iDate = new Date(date.date);
 
+      // Check for exceptions first
+      let hasException = false;
+      let exceptionData = null;
+
+      if (date.exceptions && date.exceptions.length > 0) {
+        const exception = date.exceptions.find(
+          (e) => e.date === currentDateKey
+        );
+        if (exception) {
+          hasException = true;
+          exceptionData = exception;
+        }
+      }
+
+      // Skip this date if it's marked as deleted in exceptions
+      if (hasException && exceptionData.type === "deleted") {
+        return; // Skip to next date
+      }
+
       // Handle one-time events
       if (
         !date.isRecurring &&
@@ -192,7 +247,9 @@ const calendarDays = computed(() => {
         events.push({
           type: "important",
           title: date.title,
+          description: date.description,
           color: date.color || "error",
+          id: date.id,
         });
       }
 
@@ -235,12 +292,32 @@ const calendarDays = computed(() => {
         }
 
         if (matches) {
-          events.push({
-            type: "recurring",
-            title: date.title,
-            color: date.color || "secondary",
-            description: date.description,
-          });
+          // If there's a modified exception for this date, use the exception data
+          if (hasException && exceptionData.type === "modified") {
+            events.push({
+              type: "recurring",
+              title: exceptionData.title || date.title,
+              description: exceptionData.description || date.description,
+              color: exceptionData.color || date.color || "secondary",
+              id: date.id,
+              isException: true,
+              exceptionDate: currentDateKey,
+            });
+          } else {
+            // Otherwise use the standard recurring event data
+            events.push({
+              type: "recurring",
+              title: date.title,
+              description: date.description,
+              color: date.color || "secondary",
+              id: date.id,
+              date: date.date,
+              isRecurring: true,
+              recurrenceType: date.recurrenceType,
+              recurrenceInterval: date.recurrenceInterval,
+              recurrenceUnit: date.recurrenceUnit,
+            });
+          }
         }
       }
     });
@@ -283,6 +360,69 @@ const prevMonth = () => {
     currentMonth.value--;
   }
 };
+
+// Function to open the event details dialog
+const openEventDialog = (event, eventIndex, dayData) => {
+  // For custom events, we need to find the original event with all properties
+  if (event.type !== "birthday") {
+    // Find the original event data from importantDates with all the properties needed
+    const originalEvent = props.importantDates.find(
+      (date) =>
+        date.title === event.title && date.description === event.description
+    );
+
+    if (originalEvent) {
+      selectedEvent.value = originalEvent;
+      selectedEventId.value = originalEvent.id;
+    } else {
+      selectedEvent.value = event;
+      selectedEventId.value = event.id;
+    }
+
+    // Store the current date of this occurrence (needed for single occurrence operations)
+    const day = dayData.day;
+    if (day) {
+      selectedEventDate.value = new Date(
+        currentYear.value,
+        currentMonth.value,
+        day
+      );
+    }
+  } else {
+    // For birthdays, just use the event as is
+    selectedEvent.value = event;
+    selectedEventId.value = null; // Birthdays can't be edited/deleted
+    selectedEventDate.value = null;
+  }
+
+  showEventDialog.value = true;
+};
+
+// Function to update an event (all occurrences)
+const updateEvent = (data) => {
+  emit("update-event", data);
+};
+
+// Function to update a single occurrence of a recurring event
+const updateSingleOccurrence = (data) => {
+  emit("update-single-occurrence", data);
+};
+
+// Function to delete an event (all occurrences)
+const deleteEvent = (id) => {
+  emit("delete-event", id);
+};
+
+// Function to delete a single occurrence of a recurring event
+const deleteSingleOccurrence = (data) => {
+  emit("delete-single-occurrence", data);
+};
+
+// Function to close the dialog
+const closeEventDialog = () => {
+  selectedEvent.value = null;
+  showEventDialog.value = false;
+};
 </script>
 
 <style scoped>
@@ -314,7 +454,7 @@ const prevMonth = () => {
 }
 
 .calendar-day {
-  min-height: 80px;
+  min-height: 50px;
   padding: 4px;
   border: 1px solid var(--v-border-color);
   border-radius: 4px;
@@ -380,5 +520,9 @@ const prevMonth = () => {
   .day-events .v-chip {
     font-size: 0.65rem;
   }
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }
 </style>
